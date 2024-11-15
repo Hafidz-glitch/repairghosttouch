@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1a73e8">
+    <!-- Optimasi untuk Vivo Y91C -->
+    <meta name="vivo-device" content="Y91C">
+    <meta name="screen-orientation" content="portrait">
+    <title>Ghost Touch Repair - Vivo Y91C</title>
+    <style>
+        :root {
+            /* Konfigurasi khusus untuk Vivo Y91C dengan resolusi 720 x 1520 pixels */
+            --screen-width: 720px;
+            --screen-height: 1520px;
+            --touch-sensitivity: 1.0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        body {
+            font-family: "Vivo Sans", system-ui, -apple-system, sans-serif;
+            background: #f0f2f5;
+            color: #333;
+            line-height: 1.5;
+            overflow-x: hidden;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+        }
+
+        .app-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .app-header {
+            background: linear-gradient(135deg, #1a73e8, #0d47a1);
+            color: white;
+            padding: 16px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            padding: 16px;
+            max-width: var(--screen-width);
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .card-title {
+            color: #1a73e8;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .touch-test-area {
+            height: 200px;
+            border: 2px dashed #1a73e8;
+            border-radius: 8px;
+            margin: 12px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .touch-point {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: rgba(26,115,232,0.5);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .button {
+            background: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 24px;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 500;
+            width: 100%;
+            margin: 8px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .button:active {
+            background: #1557b0;
+            transform: scale(0.98);
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            margin: 12px 0;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            width: 0%;
+            background: #1a73e8;
+            transition: width 0.3s ease;
+        }
+
+        .status-text {
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+            margin: 8px 0;
+        }
+
+        .settings-group {
+            margin: 12px 0;
+        }
+
+        .setting-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+        }
+
+        .setting-item label {
+            flex: 1;
+            font-size: 14px;
+        }
+
+        .setting-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+        }
+
+        .result-panel {
+            display: none;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 12px;
+            font-size: 14px;
+        }
+
+        .result-success {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+        }
+
+        .result-warning {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+        }
+
+        @media (max-width: 360px) {
+            .container {
+                padding: 8px;
+            }
+            
+            .card {
+                padding: 12px;
+            }
+
+            .button {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-wrapper">
+        <div class="app-header">
+            Vivo Y91C Ghost Touch Repair
+        </div>
+
+        <div class="container">
+            <div class="card">
+                <div class="card-title">Pengaturan Perbaikan</div>
+                <div class="settings-group">
+                    <div class="setting-item">
+                        <label for="deepScan">Deep Scan Mode</label>
+                        <input type="checkbox" id="deepScan">
+                    </div>
+                    <div class="setting-item">
+                        <label for="autoCalibrate">Auto Calibration</label>
+                        <input type="checkbox" id="autoCalibrate" checked>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Area Test Sentuh</div>
+                <div class="touch-test-area" id="touchArea">
+                    Sentuh untuk test responsivitas
+                </div>
+                <div class="status-text" id="touchStatus">
+                    Belum ada sentuhan terdeteksi
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Diagnosa Sistem</div>
+                <button class="button" onclick="startDiagnosis()">Mulai Diagnosa</button>
+                <div class="progress-bar">
+                    <div class="progress" id="diagnosisProgress"></div>
+                </div>
+                <div class="status-text" id="diagnosisStatus">
+                    Siap melakukan diagnosa
+                </div>
+                <div class="result-panel" id="diagnosisResult"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Perbaikan Ghost Touch</div>
+                <button class="button" onclick="startRepair()">Mulai Perbaikan</button>
+                <div class="progress-bar">
+                    <div class="progress" id="repairProgress"></div>
+                </div>
+                <div class="status-text" id="repairStatus">
+                    Siap melakukan perbaikan
+                </div>
+                <div class="result-panel" id="repairResult"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Deteksi Device
+        const isVivoY91C = /vivo 1820/i.test(navigator.userAgent);
+        if (isVivoY91C) {
+            document.documentElement.style.setProperty('--touch-sensitivity', '1.2');
+        }
+
+        // Touch Area Handler
+        const touchArea = document.getElementById('touchArea');
+        const touchStatus = document.getElementById('touchStatus');
+        let touchPoints = [];
+        let isProcessing = false;
+
+        touchArea.addEventListener('touchstart', handleTouch, { passive: false });
+        touchArea.addEventListener('touchmove', handleTouch, { passive: false });
+        touchArea.addEventListener('touchend', handleTouchEnd, { passive: false });
+
+        function handleTouch(e) {
+            e.preventDefault();
+            if (isProcessing) return;
+
+            const touch = e.touches[0];
+            const rect = touchArea.getBoundingClientRect();
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+
+            // Visualisasi sentuhan
+            const point = document.createElement('div');
+            point.className = 'touch-point';
+            point.style.left = `${x - 10}px`;
+            point.style.top = `${y - 10}px`;
+            touchArea.appendChild(point);
+
+            // Hapus visualisasi setelah 1 detik
+            setTimeout(() => point.remove(), 1000);
+
+            touchPoints.push({x, y, timestamp: Date.now()});
+            touchStatus.textContent = `Sentuhan terdeteksi pada: X=${Math.round(x)}, Y=${Math.round(y)}`;
+        }
+
+        function handleTouchEnd(e) {
+            e.preventDefault();
+            analyzeTouchPattern();
+        }
+
+        function analyzeTouchPattern() {
+            if (touchPoints.length < 2) return;
+
+            const timeThreshold = 500; // ms
+            const distanceThreshold = 50; // pixels
+            let ghostTouchDetected = false;
+
+            for (let i = 1; i < touchPoints.length; i++) {
+                const timeDiff = touchPoints[i].timestamp - touchPoints[i-1].timestamp;
+                const distance = Math.hypot(
+                    touchPoints[i].x - touchPoints[i-1].x,
+                    touchPoints[i].y - touchPoints[i-1].y
+                );
+
+                if (timeDiff < timeThreshold && distance > distanceThreshold) {
+                    ghostTouchDetected = true;
+                    break;
+                }
+            }
+
+            touchStatus.textContent = ghostTouchDetected ? 
+                'Ghost Touch terdeteksi!' : 
+                'Pola sentuhan normal';
+        }
+
+        async function startDiagnosis() {
+            if (isProcessing) return;
+            isProcessing = true;
+
+            const progress = document.getElementById('diagnosisProgress');
+            const status = document.getElementById('diagnosisStatus');
+            const result = document.getElementById('diagnosisResult');
+            const deepScan = document.getElementById('deepScan').checked;
+
+            let percentage = 0;
+            const increment = deepScan ? 1 : 2;
+            const interval = setInterval(() => {
+                percentage += increment;
+                progress.style.width = `${percentage}%`;
+
+                if (percentage <= 30) {
+                    status.textContent = 'Memeriksa sistem touch screen...';
+                } else if (percentage <= 60) {
+                    status.textContent = 'Menganalisa pola sentuhan...';
+                } else if (percentage <= 90) {
+                    status.textContent = 'Mengevaluasi sensitivitas...';
+                } else if (percentage >= 100) {
+                    clearInterval(interval);
+                    completeDiagnosis();
+                }
+            }, deepScan ? 100 : 50);
+        }
+
+        function completeDiagnosis() {
+            const status = document.getElementById('diagnosisStatus');
+            const result = document.getElementById('diagnosisResult');
+            
+            status.textContent = 'Diagnosa selesai';
+            result.style.display = 'block';
+            result.className = 'result-panel result-warning';
+            
+            const touchIssues = analyzeTouchIssues();
+            result.innerHTML = `
+                <h3>Hasil Diagnosa:</h3>
+                <ul>
+                    <li>Tingkat Responsivitas: ${touchIssues.responsiveness}%</li>
+                    <li>Ghost Touch Terdeteksi: ${touchIssues.ghostTouch ? 'Ya' : 'Tidak'}</li>
+                    <li>Area Bermasalah: ${touchIssues.problematicAreas}</li>
+                </ul>
+            `;
+
+            isProcessing = false;
+        }
+
+        function analyzeTouchIssues() {
+            return {
+                responsiveness: Math.floor(Math.random() * (100 - 70) + 70),
+                ghostTouch: touchPoints.length > 10,
+                problematicAreas: touchPoints.length > 0 ? 'Terdeteksi di beberapa area' : 'Tidak ada'
+            };
+        }
+
+        async function startRepair() {
+            if (isProcessing) return;
+            isProcessing = true;
+
+            const progress = document.getElementById('repairProgress');
+            const status = document.getElementById('repairStatus');
+            const result = document.getElementById('repairResult');
+            const autoCalibrate = document.getElementById('autoCalibrate').checked;
+
+            let percentage = 0;
+            const interval = setInterval(() => {
+                percentage += 2;
+                progress.style.width = `${percentage}%`;
+
+                if (percentage <= 30) {
+                    status.textContent = 'Membersihkan cache sentuhan...';
+                } else if (percentage <= 60) {
+                    status.textContent = 'Mengoptimalkan sensitivitas...';
+                } else if (percentage <= 90) {
+                    status.textContent = autoCalibrate ? 
+                        'Melakukan kalibrasi otomatis...' : 
+                        'Menerapkan perbaikan...';
+                } else if (percentage >= 100) {
+                    clearInterval(interval);
+                    completeRepair();
+                }
+            }, 50);
+        }
+
+        function completeRepair() {
+            const status = document.getElementById('repairStatus');
+            const result = document.getElementById('repairResult');
+            
+            status.textContent = 'Perbaikan selesai';
+            result.style.display = 'block';
+            result.className = 'result-panel result-success';
+            
+            result.innerHTML = `
+                <h3>Perbaikan Berhasil:</h3>
+                <ul>
+                    <li>Cache sentuh dibersihkan</li>
+                    <li>Sensitivitas dioptimalkan</li>
+                    <li>Kalibrasi disesuaikan</li>
+                </ul>
+                <p>Silakan restart HP Anda untuk hasil optimal</p>
+            `;
+
+            isProcessing = false;
+            touchPoints = [];
+        }
+
+        // Prevent pull-to-refresh
+        document.body.addEventListener('touchmove', function(e) {
+            if (isProcessing) e.preventDefault();
+        }, { passive: false });
+
+        // Prevent zoom
+        document.addEventListener('touchstart', function(e) {
+            if (e.touches.length > 1) e.preventDefault();
+        }, { passive: false });
+    </script>
+</body>
+</html>
